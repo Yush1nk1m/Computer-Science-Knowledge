@@ -134,3 +134,16 @@ Dockerfile에 패키지와 환경 변수 등을 기록하고 빌드하면 도커
 도커는 컨테이너 기술을 사용함으로써 하나의 OS 위에서 특정 이미지를 사용해 여러 개의 컨테이너를 운영합니다. 이렇게 함으로써 컴퓨팅 자원을 적게 소모하게 된다는 장점이 있지만 사용자 간 OS를 공유하기 때문에 완전한 격리성이 보장되지 않는다는 점은 유의해야 할 필요가 있습니다.
 
 </details>
+
+## CI/CD
+
+![note](notes/CICD.jpg)
+
+<details>
+<summary>Q12. CI/CD란 무엇인지 설명하세요.</summary>
+
+CI/CD란 Continuous Integration, Continuous Deployment의 줄임말로 소프트웨어 개발 단계와 운영 단계를 하나의 파이프라인으로 통합한 것입니다. CI/CD 파이프라인은 계획하고, 코딩하고, 빌드하고, 테스트하고, 머지하는 Continuous Integration 과정, 리포지토리에 릴리즈하고, 실제 서비스를 배포하고, 운영하고, 모니터링하는 Continuous Deployment 과정이 반복됩니다.
+
+여기서 Continuous는 '지속적'이라는 의미를 갖는 동시에 관점에 따라 '자동화된'이라는 의미를 가질 수도 있다고 생각합니다. 왜냐하면 github action, genkins 같은 툴을 사용해 파이프라인의 각 과정을 자동화하는 것이 CI/CD의 핵심이기 때문입니다.
+
+</details>
