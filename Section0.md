@@ -147,3 +147,9 @@ CI/CD란 Continuous Integration, Continuous Deployment의 줄임말로 소프트
 여기서 Continuous는 '지속적'이라는 의미를 갖는 동시에 관점에 따라 '자동화된'이라는 의미를 가질 수도 있다고 생각합니다. 왜냐하면 github action, genkins 같은 툴을 사용해 파이프라인의 각 과정을 자동화하는 것이 CI/CD의 핵심이기 때문입니다.
 
 </details>
+
+## Questions
+
+![note 1](notes/Section0Q1.jpg)
+
+![note 1](notes/Section0Q2.jpg)
