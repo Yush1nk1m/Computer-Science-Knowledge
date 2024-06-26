@@ -2,7 +2,7 @@
 
 ## 데이터 교환 형식 # 1. JSON과 역직렬화/직렬화
 
-![note](notes/JSON.jpg)
+![note](notes/section0/JSON.jpg)
 
 <details>
 <summary>Q1. JSON에 대해 설명하세요.</summary>
@@ -24,7 +24,7 @@ JSON.parse()를 사용하여 역직렬화하고, JSON.stringify()를 사용하�
 
 ## 데이터 교환 형식 # 2. XML
 
-![note](notes/XML.jpg)
+![note](notes/section0/XML.jpg)
 
 <details>
 <summary>Q1. XML에 대해 설명하세요.</summary>
@@ -55,7 +55,7 @@ XML은 데이터 저장과 전송 용도로 사용되며, 태그를 사용자가
 
 ## API
 
-![note](notes/API.jpg)
+![note](notes/section0/API.jpg)
 
 <details>
 <summary>Q4. API란 무엇인지 설명하세요.</summary>
@@ -77,9 +77,9 @@ Application Programming Interface, 줄여서 API란 컴퓨터 간 존재하는 �
 
 ## 클라우드
 
-![note 1](notes/Cloud1.jpg)
+![note 1](notes/section0/Cloud1.jpg)
 
-![note 2](notes/Cloud2.jpg)
+![note 2](notes/section0/Cloud2.jpg)
 
 <details>
 <summary>Q6. 클라우드 서비스란 무엇인지 설명하세요.</summary>
@@ -137,7 +137,7 @@ Dockerfile에 패키지와 환경 변수 등을 기록하고 빌드하면 도커
 
 ## CI/CD
 
-![note](notes/CICD.jpg)
+![note](notes/section0/CICD.jpg)
 
 <details>
 <summary>Q12. CI/CD란 무엇인지 설명하세요.</summary>
@@ -150,6 +150,6 @@ CI/CD란 Continuous Integration, Continuous Deployment의 줄임말로 소프트
 
 ## Questions
 
-![note 1](notes/Section0Q1.jpg)
+![note 1](notes/section0/Section0Q1.jpg)
 
-![note 1](notes/Section0Q2.jpg)
+![note 1](notes/section0/Section0Q2.jpg)
