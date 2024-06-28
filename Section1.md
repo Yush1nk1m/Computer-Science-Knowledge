@@ -183,3 +183,119 @@ console.log(coffee.name);
 전략 패턴은 행동 패턴의 한 종류로, 전략이라는 캡슐화한 알고리즘을 컨텍스트 안에서 상호 교체하는 디자인 패턴입니다. 전략 패턴을 사용한 대표적인 예시로는 passport.js가 있습니다.
 
 </details>
+
+## 옵저버 패턴
+
+![note](notes/section1/Observer.jpg)
+
+<details>
+<summary>Q9. 옵저버 패턴이란 무엇입니까?</summary>
+
+옵저버 패턴은 행동 패턴 중 하나로, 어떤 주체가 객체들의 상태 변화를 감시하고 있다가 상태 변화 발생 시 옵저버들에게 이를 알리는 디자인 패턴입니다. 트위터 메인 로직이나 MVC 패턴에 사용되고 있습니다.
+
+</details>
+
+## 프록시 패턴
+
+![note](notes/section1/Proxy.jpg)
+
+**Example) Javascript Proxy Pattern**
+```
+function createReactiveObject(target, callback) {
+    const proxy = new Proxy(target, {
+        set(obj, prop, value) {
+            if (value !== obj[prop]) {
+                const prev = obj[prop];
+                obj[prop] = value;
+                callback(`${prop}가 [${prev}] >> [${value}]로 변경되었습니다.`);
+            }
+            return true;
+        }
+    });
+    return proxy;
+}
+
+const obj = {
+    "yushin": "yeonwoo",
+};
+const reactiveObj = createReactiveObject(obj, console.log);
+
+reactiveObj.yushin = "choco";
+reactiveObj.yushin = "yeonwoo";
+
+...
+
+$ node proxy.js
+yushin가 [yeonwoo] >> [choco]로 변경되었습니다.
+yushin가 [choco] >> [yeonwoo]로 변경되었습니다.
+```
+
+<details>
+<summary>Q10. 프록시 패턴이란 무엇입니까?</summary>
+
+프록시 패턴은 구조 패턴 중 하나로, 어떤 객체가 다른 객체에 접근하고자 할 때 그 흐름을 가로채어 필터링하는 추가적인 계층을 두는 디자인 패턴입니다. 프록시 서버에 사용됩니다.
+
+개발자는 서비스 앞단에 프록시 서버로 cloudfare를 두어 불필요하거나 공격적인 트래픽을 필터링할 수 있습니다.
+
+</details>
+
+## MVC, MVP, MVVM
+
+![note](notes/section1/MVC_MVP_MVVM.jpg)
+
+<details>
+<summary>Q11. MVC 패턴이란 무엇이고, 그 장단점은 무엇입니까?</summary>
+
+MVC 패턴이란 Model, View, Controller로 애플리케이션 로직을 분리한 디자인 패턴입니다.
+
+Model은 애플리케이션에서 사용되는 데이터로, View의 데이터 생성 및 수정에 따라 영향을 받습니다.
+
+View는 사용자 인터페이스로, 모델의 정보를 저장하지 않고 변경 발생 시 Controller에 이를 전달합니다.
+
+Controller는 Model, View를 연결하는 중간자로, 메인 로직을 담당하고 Model, View의 생명 주기를 관리하거나 변경 사항을 알립니다.
+
+MVC 패턴을 사용하면 애플리케이션의 각 구성요소만 집중적으로 개발 가능하고, 재사용성과 확장성이 높아진다는 장점이 있습니다. 그러나 애플리케이션이 복잡해질수록 Model, View 간의 관계도 동시에 복잡해진다는 단점이 있습니다.
+
+</details>
+
+<details>
+<summary>Q12. MVP 패턴이란 무엇입니까?</summary>
+
+MVP 패턴이란 MVC 패턴에서 Controller를 Presenter로 대체한 디자인 패턴입니다. Presenter는 View와 1:1 관계로 연결되어 있습니다.
+
+</details>
+
+<details>
+<summary>Q13. MVVM 패턴이란 무엇입니까?</summary>
+
+MVVM 패턴이란 MVC 패턴에서 Controller를 뷰의 추상화 계층인 View Model로 대체한 디자인 패턴입니다. View Model과 View는 1:N 관계로 연결되어 있습니다. MVVM 패턴을 사용한 대표적인 예시는 Vue.js가 있습니다.
+
+</details>
+
+<details>
+<summary>Q14. MVC, MVP, MVVM 패턴의 주요한 차이점은 무엇입니까?</summary>
+
+MVC 패턴은 컨트롤러와 뷰가 1:N 관계로 연결되어 있고, MVP 패턴은 프레젠터와 뷰가 1:1 관계로 연결되어 있으며, MVVM 패턴은 뷰 모델과 뷰가 1:N 관계로 연결되어 있습니다.
+
+그러나 MVC 패턴에서 뷰는 컨트롤러를 참조할 수 없고, MVP 패턴에서 뷰는 프레젠터를 참조할 수 있으며, MVVM 패턴에서 뷰는 뷰 모델을 참조할 수 있습니다.
+
+</details>
+
+## Flux 패턴
+
+![note](notes/section1/Flux.jpg)
+
+<details>
+<summary>Q15. Flux 패턴이란 무엇이고, 그 장점은 무엇입니까?</summary>
+
+Flux 패턴은 단방향으로 데이터 흐름을 관리하는 디자인 패턴입니다. MVC 패턴을 사용했을 때 애플리케이션이 복잡해질수록 뷰와 모델 간 양방향 데이터 흐름이 복잡해져 데이터 일관성을 보장하기 어려워지는 문제점이 있었습니다. Flux 패턴은 이 문제를 해결하기 위해 고안된 디자인 패턴으로, Action, Dispatcher, Store, View 네 개의 구성요소가 있어 단방향으로 데이터가 전달됩니다.
+
+Action은 사용자 이벤트를 받아 이벤트 객체를 생성하고 Dispatcher에 전달합니다. Dispatcher는 Action 객체를 기반으로 행위를 결정하고, 로직 수행 후 Store에 결과를 전달합니다. Store는 애플리케이션의 상태를 관리하고 저장합니다. 마지막으로 View는 애플리케이션의 데이터를 기반으로 UI를 제공합니다.
+
+Flux 패턴을 사용함으로써 데이터 일관성을 쉽게 보장할 수 있고, 버그 발견과 단위 테스트가 용이해집니다.
+
+</details>
+
+## Questions
+
+![note](notes/section1/Section1Q01.jpg)
