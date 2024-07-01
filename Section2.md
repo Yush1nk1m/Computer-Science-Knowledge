@@ -204,3 +204,122 @@ MTU보다 큰 데이터를 전송하면 데이터가 Segmentation될 수 있습�
 Segmentation이 허용되지 않으면 패킷 전송에 실패하기 때문에 송신자는 PMTUD, Path MTU Discovery를 통해서 중간에 패킷이 누락된 경우 패킷의 크기를 줄여가며 반복 전송하면서 MTU 이하의 크기를 갖는 데이터를 전송할 수 있습니다.
 
 </details>
+
+## TCP/IP 4계층 #3. 애플리케이션 계층
+
+![note](notes/section2/ApplicationLayer.jpg)
+
+<details>
+<summary>Q13. TCP/IP 4계층에서 애플리케이션 계층과 대표적인 프로토콜들에 대해 설명하세요.</summary>
+
+TCP/IP 4계층에서 애플리케이션 계층은 사용자에게 실질적인 서비스를 제공합니다. 대표적인 프로토콜로는 HTTP, SSH, FTP, SMTP가 있습니다.
+
+HTTP, Hypertext Transfer Protocol은 원래 서버와 브라우저 간의 통신을 위한 프로토콜이었습니다. 그러나 현재는 서버와 서버 간의 통신에도 사용되고 있습니다. 주요한 특징으로는 헤더를 통한 확장이 용이하다는 점, 무상태여서 서로 다른 요청 간에 상태를 공유하지 않는다는 점이 있습니다.
+
+SSH, Secure Shell Protocol은 보안되지 않은 네트워크 내 안전한 통신을 위한 암호화 네트워크 프로토콜입니다. CLI 환경에서 사용되며 SCP를 사용하면 SSH를 사용해 파일 전송도 할 수 있습니다.
+
+FTP, File Transfer Protocol은 노드들 간 파일 전송을 위한 프로토콜입니다. FileZilla와 같이 GUI 형태로도 제공됩니다. 현재는 SFTP 또는 FTPS라는 암호화된 파일 전송 프로토콜로 대체되고 있습니다.
+
+SMTP, Simple Mail Transfer Protocol은 메일 전송에 사용되는 프로토콜입니다. Node.js에서는 Nodemailer라는 라이브러리를 사용해 SMTP 프로토콜로 메일링을 할 수 있습니다.
+
+</details>
+
+## TCP/IP 4계층 #4. 전송 계층
+
+![note](notes/section2/TransportLayer.jpg)
+
+<details>
+<summary>Q14. TCP/IP 4계층에서 전송 계층과 대표적인 프로토콜들에 대해 설명하세요.</summary>
+
+TCP/IP 4계층에서 전송 계층은 애플리케이션 계층의 메시지를 세그먼트 또는 데이터그램으로 만드는 역할을 담당합니다. 대표적인 프로토콜로는 TCP, UDP가 있습니다.
+
+TCP는 가상 회선 패킷 교환 방식을 통해 회선 기반으로 데이터의 순서를 보장합니다. 오류 검사 메커니즘으로는 timeout 발생 시 재전송 또는 Checksum을 사용합니다. 헤더는 20바이트에서 60바이트 사이의 가변 길이를 가집니다.
+
+UDP는 데이터그램 패킷 교환 방식을 통해 순서를 보장하지 않고 데이터를 전송합니다. 오류 검사 메커니즘으로는 간단한 Checksum만을 사용합니다. 헤더는 8바이트의 고정 길이를 가집니다.
+
+</details>
+
+<details>
+<summary>Q15. TCP와 UDP의 차이점이 무엇인가요?</summary>
+
+TCP는 가상 회선 패킷 교환 방식, 신뢰성, 재전송 및 Checksum 오류 검사, 가변 헤더 길이, handshake를 통한 연결성, 브로드캐스트 미지원, 느린 속도의 특징을 갖고 있습니다.
+
+UDP는 데이터그램 패킷 교환 방식, 비신뢰성, Checksum 오류 검사, 고정 헤더 길이, 비연결성, 브로드캐스트 지원, 빠른 속도의 특징을 갖고 있습니다.
+
+</details>
+
+## TCP/IP 4계층 #5. 인터넷 계층
+
+![note](notes/section2/NetworkLayer.jpg)
+
+<details>
+<summary>Q16. TCP/IP 4계층에서 인터넷 계층과 대표적인 프로토콜에 대해 설명하세요.</summary>
+
+TCP/IP 4계층에서 인터넷 계층은 전송 계층의 세그먼트 또는 데이터그램을 패킷으로 만드는 역할을 합니다. 대표적인 프로토콜로는 ICMP가 있습니다.
+
+ICMP, Internet Control Message Protocol은 노드 간 통신이 원활히 되고 있는지 확인하기 위한 프로토콜입니다. 데이터 교환이 불가능하고 테스팅 용도로 사용됩니다. 전송 계층과 연관이 없는 인터넷 계층만의 독립적인 비연결형 프로토콜입니다. Ping 커맨드가 ICMP를 사용해 구현되었습니다.
+
+</details>
+
+## TCP의 연결 성립: 3-Way Handshake
+
+![note](notes/section2/TCP3WayHandshake.jpg)
+
+<details>
+<summary>Q17. TCP 3-way handshake에 대해 설명하세요.</summary>
+
+TCP 3-way handshake는 TCP 연결 성립 과정입니다. SYN 단계, SYN+ACK 단계, ACK 단계의 3단계로 나뉩니다.
+
+SYN 단계에선 클라이언트가 ISN을 생성하고 서버에 연결 요청을 보냅니다. 이때 서버는 CLOSED 상태에서 LISTEN 상태로 전환되어 있어야 하며, 클라이언트는 CLOSED 상태에서 SYN-SENT 상태로 전환됩니다.
+
+SYN+ACK 단계에선 서버가 클라이언트의 ISN에 1을 더해 연결 요청을 승인하고, 자신의 ISN을 생성한 후 클라이언트에게 연결 요청을 보냅니다. 이때 서버는 LISTEN 상태에서 SYN-RECEIVED 상태로 전환됩니다.
+
+ACK 단계에선 클라이언트가 서버의 ISN에 1을 더해 연결 요청을 승인하고 TCP 연결이 성립됩니다. 이때 클라이언트는 ESTABLISHED 상태가 되고, 서버는 ACK을 받고 ESTABLISHED 상태가 됩니다.
+
+</details>
+
+<details>
+<summary>Q18. ISN이란 무엇이고 어떤 역할을 하나요?</summary>
+
+ISN이란 TCP 기반의 통신에서 새 연결에 할당되는 32비트의 고유한 시퀀스입니다. 고유한 값을 가지기 때문에 연결 간 데이터가 구분될 수 있어 충돌이 방지됩니다.
+
+</details>
+
+## TCP의 연결 해제: 4-Way Handshake
+
+![note](notes/section2/TCP4WayHandshake.jpg)
+
+<details>
+<summary>Q19. TCP 4-way handshake에 대해 설명하세요.</summary>
+
+TCP 4-way handshake는 TCP 연결 해제 과정입니다. 클라이언트 FIN 단계, ACK 단계, 서버 FIN 단계, ACK 단계의 4단계로 구성됩니다.
+
+클라이언트 FIN 단계에서는 클라이언트가 종료를 요청합니다. 이때 클라이언트는 ESTABLISHED 상태에서 FIN_WAIT_1 상태로 전환됩니다.
+
+ACK 단계에서는 서버가 클라이언트의 종료 요청을 승인합니다. 이때 서버는 ESTABLISHED 상태에서 CLOSE_WAIT 상태로 전환되고, 클라이언트는 ACK 패킷을 받은 후 FIN_WAIT_2 상태로 전환됩니다.
+
+서버의 FIN 단계에서는 서버가 종료를 요청합니다. 이때 서버는 LAST_ACK 상태로 전환되어 클라이언트의 마지막 ACK를 기다립니다.
+
+ACK 단계에서는 클라이언트가 서버의 종료 요청을 승인합니다. 이때 클라이언트는 TIME_WAIT 상태에서 대기하다가 CLOSED 상태로 전환되고, 서버는 ACK 패킷을 받으면 CLOSED 상태로 전환됩니다.
+
+</details>
+
+<details>
+<summary>Q20. TIME_WAIT 상태가 무엇인가요?</summary>
+
+TCP 4-way handshake에서 클라이언트가 마지막으로 ACK 요청을 보낸 후 서버의 지연 패킷을 대기하는 상태입니다. 일반적으로 OS dependent한 최대 패킷 수명(MSL)의 두 배 정도의 시간을 가집니다.
+
+TIME_WAIT 상태를 가짐으로써 데이터 무결성을 보장할 수 있고, 연결을 올바르게 해제할 수 있습니다.
+
+</details>
+
+<details>
+<summary>Q21. TCP 연결 종료 과정은 왜 3-way가 아닌 4-way일까요?</summary>
+
+TCP 연결 성립 과정에서 서버는 SYN 패킷을 받은 이후 ACK 패킷과 자신의 SYN 패킷을 분할해 전송할 이유가 없습니다. 때문에 3-way handshake에선 두 전송이 동시에 이루어집니다.
+
+그러나 TCP 연결 종료 과정에서 서버는 FIN 패킷을 받은 이후에도 데이터를 전송해야 할 수 있습니다. 따라서 ACK 패킷을 우선 보낸 후 자신의 FIN 패킷은 데이터 전송을 마친 뒤에 보내야 합니다.
+
+즉, 서버의 ACK 패킷과 FIN 패킷은 항상 동시에 전송될 수 없습니다. 따라서 이 두 전송 과정을 분리하여 4-way handshake가 형성된 것입니다.
+
+</details>
