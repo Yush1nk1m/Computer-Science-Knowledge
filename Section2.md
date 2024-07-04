@@ -417,3 +417,63 @@ IPv4를 기준으로 Classful IP Addressing이란 4개의 옥텟으로 이루어
 필요한 양보다 할당된 호스트 주소의 개수가 더 많다면 이는 IP 주소의 낭비로 이어져서 문제가 됩니다. 반면, 할당된 호스트 주소의 개수가 더 적다면 이는 서로 다른 IP 주소를 여러 개 할당받아야 하기 때문에 문제가 됩니다.
 
 </details>
+
+## IP 주소 체계 #4. Classless와 Subnet mask, Subnetting
+
+![note](notes/section2/ClasslessIPAddressing.jpg)
+
+<details>
+<summary>Q30. Classless와 Classful IP addressing의 차이점은 무엇인가요?</summary>
+
+Classful IP addressing은 네트워크를 클래스로 구분하고, 네트워크 주소를 IP 주소의 앞 1/2/3 옥텟을 고정적으로 사용해 부여합니다. 이 방식은 많은 네트워크에서 적절한 네트워크 개수를 부여받지 못해 문제점이 발생합니다.
+
+이를 해결하기 위해 Classless IP addressing이 등장했습니다. 이는 서브넷 마스크를 활용해 네트워크 주소를 나타내는 비트, 호스트 주소를 나타내는 비트를 유연하게 구분하고 이에 따라 필요한 개수로 할당된 주소를 서브네팅하여 활용할 수 있습니다.
+
+</details>
+
+<details>
+<summary>Q31. 서브넷 마스크는 왜 1과 0이 연속되어 있어야 할까요?</summary>
+
+IP 주소를 표현할 때 서브넷 마스크를 나타내기 위해서 192.0.0.1/28과 같이 맨 뒤에 서브넷 마스크의 1 개수를 나타내곤 합니다. 만약 1과 0이 연속되어 있지 않고 섞여서 위치할 수 있게 된다면 이런 식으로 간단하게 서브넷 마스크를 표현할 수 없을 것입니다.
+
+</details>
+
+## IP 주소 체계 #5. 공인 IP(public IP)와 사설 IP(private IP)와 NAT
+
+![note](notes/section2/PublicIP_PrivateIP_NAT.jpg)
+
+<details>
+<summary>Q32. public IP, private IP의 차이점에 대해 설명하세요.</summary>
+
+public IP는 외부 네트워크와 통신하기 위한 IP이고, private IP는 내부 네트워크의 장치들을 구분하고 통신하기 위한 IP입니다.
+
+</details>
+
+<details>
+<summary>Q33. NAT가 무엇이고, 어디에 적용되어 있나요?</summary>
+
+NAT, Network Address Translation이란 같은 public IP를 공유하는 여러 개의 장치들이 외부 네트워크와 통신하기 위한 기술로, public IP/private IP 간 변환해 줍니다.
+
+공유기에 NAT 기술이 도입되어 있고, 그 덕분에 같은 공유기의 Wi-fi에 연결한 여러 개의 장치들은 private IP를 부여받으면서 해당 공유기의 public IP를 통해 외부 네트워크와 통신할 수 있습니다.
+
+</details>
+
+
+## HTTP header
+
+![note](notes/section2/HTTPHeader.jpg)
+
+<details>
+<summary>Q34. HTTP 요청 발생 시 어떤 일이 일어나나요?</summary>
+
+HTTP 요청이 일어나면 body, header가 교환됩니다. body에는 보내고자 하는 컨텐츠의 본문인 JSON, html, image 등이 담기고 header는 body 및 그 외에 대해 설명하는 정보가 담깁니다. header는 콜론(:)으로 구분되는 key-value 쌍의 조합으로 표현됩니다.
+
+header의 종류로는 general header, request header, response header의 세 가지가 있습니다.
+
+general header에는 요청 url, 요청 메서드, referrer policy 등이 담깁니다.
+
+request header는 클라이언트측에서 생성되는 header로 메서드, 클라이언트 OS, 브라우저 정보 등이 담깁니다.
+
+response header는 서버측에서 생성되는 header로 서버의 소프트웨어 정보 등이 담깁니다.
+
+</details>
