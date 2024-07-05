@@ -463,6 +463,22 @@ NAT, Network Address Translation이란 같은 public IP를 공유하는 여러 �
 
 ![note](notes/section2/HTTPHeader.jpg)
 
+**Example) Node.js setHeader**
+```
+const http = require("http");
+const hostname = "127.0.0.1";
+const port = 3000;
+const server = http.createServer((req, res) => {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Yushin", "Kim");
+    res.end("Hello World");
+});
+
+server.listen(port, hostname, () => {
+    console.log(`Server is running at http://${hostname}:${port}/`);
+});
+```
+
 <details>
 <summary>Q34. HTTP 요청 발생 시 어떤 일이 일어나나요?</summary>
 
@@ -475,5 +491,72 @@ general header에는 요청 url, 요청 메서드, referrer policy 등이 담깁
 request header는 클라이언트측에서 생성되는 header로 메서드, 클라이언트 OS, 브라우저 정보 등이 담깁니다.
 
 response header는 서버측에서 생성되는 header로 서버의 소프트웨어 정보 등이 담깁니다.
+
+</details>
+
+## DEEP DIVE: HTTP/1.0과 HTTP/1.1의 차이
+
+![note](notes/section2/HTTP_1.0_1.1.jpg)
+
+**Example) Node.js keep-alive header**
+```
+const express = require("express");
+const app = express();
+
+app.get("/", (req, res) => {
+    res.json({ "a": 1 });
+});
+
+const server = app.listen(3000);
+server.keepAliveTimeout = 30 * 1000;    // ms
+```
+
+<details>
+<summary>Q35. HTTP/1.0과 HTTP/1.1의 차이점은 무엇인가요?</summary>
+
+HTTP/1.0은 요청마다 TCP 3-way handshake로 연결 구축이 이루어지기 때문에 RTT가 늘어나는 문제점이 있습니다. TCP 연결을 바로 종료하지 않고 유지하도록 만드는 keep-alive 헤더를 사용할 수 있지만, 이것은 필수가 아니라 실험적으로 도입되었을 뿐입니다. 이 외에도 하나의 서버가 하나의 호스트만 사용할 수 있는 문제, 파일 이어받기가 불가능한 문제가 존재합니다.
+
+이를 해결하기 위해 등장한 것이 HTTP/1.1입니다. HTTP/1.1에서는 keep-alive를 default로 설정해 항상 TCP 연결이 바로 끊어지지 않고 일정 기간 동안 유지됩니다. Node.js에서는 keep-alive의 timeout 값이 기본적으로 5초입니다. 그리고 호스트 헤더가 존재하여 하나의 서버에서 여러 개의 호스트를 사용할 수 있습니다. 마지막으로 헤더에 Range 키를 추가하여 파일 이어받기가 가능합니다.
+
+</details>
+
+## DEEP DIVE: HTTP/2와 HTTP/3의 차이
+
+![note](notes/section2/HTTP_2_3.jpg)
+
+<details>
+<summary>Q36. HTTP/1.1과 HTTP/2의 차이점은 무엇인가요?</summary>
+
+HTTP/1.1은 패킷을 전송할 때 순서대로 전송해야 해서 같은 큐에 있는 패킷들의 전송이 앞 패킷으로 인해 지연되는 HOL, Head of Line Blocking 문제점이 존재하였습니다.
+
+이를 해결하기 위해 HTTP/2가 등장하였습니다. 응용/전송 계층 사이 바이너리 포맷 계층을 두어 텍스트 메시지를 바이너리 프레임으로 변환하고, 다중 스트림을 기반으로 단일 TCP 연결에서 순서에 상관없이 프레임을 전달하는 멀티플렉싱 기술을 사용합니다. 프레임에 스트림 ID, 청크 크기 등의 정보가 있어 순서에 상관없이 병렬적으로 데이터를 전송하더라도 재구성이 가능합니다.
+
+</details>
+
+<details>
+<summary>Q37. HTTP/2의 특징은 무엇인가요?</summary>
+
+HTTP/2의 특징은 바이너리 포맷 계층, 멀티플렉싱, 서버 푸시, 헤더 압축, 우선순위로 요약할 수 있습니다.
+
+응용 계층과 전송 계층 사이에 바이너리 포맷 계층을 두어 메시지를 바이너리 프레임으로 변환할 수 있습니다.
+
+멀티플렉싱을 통해 단일 TCP 연결에서도 스트림을 기반으로 프레이밍된 데이터들을 순서와 상관없이 병렬적으로 전송할 수 있습니다.
+
+서버 푸시를 통해 클라이언트가 요청한 리소스 외에 필요한 리소스들을 서버측에서 푸시할 수 있습니다.
+
+헤더 압축을 통해 반복되는 정보는 제외하고, 반복되지 않는 정보는 허프만 부호화를 통해 전달함으로써 패킷의 용량을 줄일 수 있습니다.
+
+우선순위 기반의 리소스 전송으로 중요한 리소스를 우선적으로 전송할 수 있습니다.
+
+</details>
+
+<details>
+<summary>Q38. 이전의 HTTP 기술들과 대비하여 HTTP/3의 차이점은 무엇인가요?</summary>
+
+이전의 HTTP 기술들은 TCP 기반의 연결을 구축합니다. 그러나 HTTP/3은 UDP 기반의 연결을 구축합니다. HTTP/3은 QUIC(Quick UDP Internet Connection) 계층 위에서 HTTP/2의 API를 사용하여 작동합니다.
+
+TCP 기반의 기존 HTTP 연결에서는 연결 구축 시 3-way handshake가 발생해 초기에 RTT가 증가하는 문제점이 있었습니다. 그러나 HTTP/3 연결에서는 TLS handshake 시에 클라이언트와 서버 간의 연결, 암호화 통신을 위한 연결이 동시에 구축되기 때문에 단 1회의 handshake만으로 연결을 완전히 구축할 수 있습니다.
+
+또한, 수신자측에서 패킷의 오류를 검출하고 교정하고, 순방향 오류 수정 메커니즘(Forward Error Correction)을 사용함으로써 패킷 손실률을 효율적으로 줄일 수 있습니다.
 
 </details>
