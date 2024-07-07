@@ -601,3 +601,182 @@ Finished 과정에선 이전까지 교환한 데이터의 무결성을 검증하
 TLS handshake를 통해 생성된 세션 키는 캐싱됩니다. 그래서 같은 사이트를 다시 방문하면 캐싱된 세션 키를 기반으로 통신을 즉시 시작할 수 있습니다. 이때는 별도의 연결 과정이 필요하지 않으므로 인증 과정에 0회의 RTT가 소요된다고 하여 0-RTT라고 부르는 것입니다.
 
 </details>
+
+## 웹 브라우저의 캐시 #1. 로컬 스토리지
+
+![note](notes/section2/LocalStorage.jpg)
+
+**localStorage 사용법**
+```
+> localStorage.setItem("KEY", "VALUE");     // 로컬 스토리지에 데이터 저장
+> localStorage.getItem("KEY");              // 로컬 스토리지에서 데이터 조회
+< 'VALUE'
+> localStorage.removeItem("KEY");           // 로컬 스토리지에서 특정 데이터 삭제
+> localStorage.clear();                     // 로컬 스토리지에서 모든 데이터 삭제
+```
+
+<details>
+<summary>Q42. 로컬 스토리지에 대해 설명해 보세요.</summary>
+
+로컬 스토리지란 브라우저 캐시 저장소의 한 종류입니다. 사용자가 수동적으로 삭제하지 않는 한 브라우저에 영구적으로 저장되며, 같은 오리진 간 캐시 저장소를 공유합니다. 데이터는 최대 5MB까지 저장이 가능하고, 로컬 스토리지에 저장된 데이터는 서버로 자동 전송되지 않습니다.
+
+</details>
+
+## 웹 브라우저의 캐시 #2. 로컬 스토리지와 오리진
+
+![note](notes/section2/Origin.jpg)
+
+<details>
+<summary>Q43. 오리진이란 무엇인가요?</summary>
+
+오리진은 웹 주소에서 프로토콜과 호스트 부분을 합친 것을 말합니다. 호스트 주소 중 포트 번호는 HTTP, HTTPS 등 well-known port를 사용하는 프로토콜의 경우 생략할 수 있습니다.
+
+</details>
+
+## 웹 브라우저의 캐시 #3. 로컬 스토리지의 활용 사례: 캐싱
+
+**Example) cache.html**
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* CSS */
+        .button-62 {
+            background: linear-gradient(to bottom right, #EF4765,#FF9A5A);
+            border: 0;
+            border-radius: 12px;
+            color: #FFFFFF;
+            cursor: pointer;
+            display: inline-block;
+            font-family: -apple-system, system-ui, "Segoe UI",
+            Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 2.5;
+            outline: transparent;
+            padding: 0 1rem;
+            text-align: center;
+            text-decoration: none;
+            transition: box-shadow .2s ease-in-out;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            white-space: nowrap;
+        }
+        .button-62:not([disabled]):focus {
+        box-shadow: 0 0 .25rem rgba(0, 0, 0, 0.5), -.125rem -.125rem 1rem rgba(239, 71, 101, 0.5), .125rem .125rem 1rem rgba(255, 154, 90, 0.5);
+        }
+        .button-62:not([disabled]):hover {
+        box-shadow: 0 0 .25rem rgba(0, 0, 0, 0.5), -.125rem -.125rem 1rem rgba(239, 71, 101, 0.5), .125rem .125rem 1rem rgba(255, 154, 90, 0.5);
+        }
+        #field {
+            font-size: 27px;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <input type="text" id="field"/>
+        <input type="button" class="button-62" value="검색" id="save"/>
+        <input type="button" class="button-62" value="조회" id="read"/>
+        <input type="button" class="button-62" value="삭제" id="clear"/>
+    </div>
+</body>
+<script>
+    window.onload = async () => {
+        const field = document.getElementById("field");
+        const save = document.getElementById("save");
+        const read = document.getElementById("read");
+        const clear = document.getElementById("clear");
+
+        save.addEventListener("click", e => localStorage.setItem("input", field.value));
+        read.addEventListener("click", e => alert(window.localStorage["input"]));
+        clear.addEventListener("click", e => localStorage.clear());
+        
+        if (window.localStorage["input"]) {
+            field.value = window.localStorage["input"];
+        }
+    };
+</script>
+</html>
+```
+
+**Example) server.js**
+```
+const express = require("express");
+const app = express();
+const path = require("path");
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "cache.html"));
+});
+
+const server = app.listen(3000);
+server.keepAliveTimeout = 30 * 1000;    // ms
+```
+
+## 웹 브라우저의 캐시 #4. 세션 스토리지
+
+![note](notes/section2/SessionStorage.jpg)
+
+**sessionStorage 사용법**
+```
+> sessionStorage.setItem("KEY", "VALUE");     // 세션 스토리지에 데이터 저장
+> sessionStorage.getItem("KEY");              // 세션 스토리지에서 데이터 조회
+< 'VALUE'
+> sessionStorage.removeItem("KEY");           // 세션 스토리지에서 특정 데이터 삭제
+> sessionStorage.clear();                     // 세션 스토리지에서 모든 데이터 삭제
+```
+
+<details>
+<summary>Q44. 세션 스토리지에 대해 설명해 보세요.</summary>
+
+세션 스토리지는 브라우저 캐시 저장소의 한 종류입니다. 같은 오리진 중에서도 같은 탭에서만 데이터를 공유할 수 있고, 탭 종료 시 데이터가 삭제됩니다. 데이터는 최대 5MB까지 저장 가능하고, 데이터를 서버로 자동 전송하지 않습니다.
+
+</details>
+
+## 웹 브라우저의 캐시 #5. 쿠키
+
+![note](notes/section2/Cookie.jpg)
+
+<details>
+<summary>Q45. 쿠키에 대해 설명해 보세요.</summary>
+
+쿠키는 브라우저 캐시 저장소 중 한 종류로, 브라우저에 저장된 데이터 조각입니다. 쿠키는 클라이언트와 서버 모두가 설정 가능합니다. 보통 사용자의 개인정보를 보호할 책임이 있는 서버에서 쿠키를 설정하고 제어하며, 최대 4KB까지 저장이 가능합니다.
+
+보통 서버에서 응답 헤더의 Set-Cookie 키에 옵션을 설정해서 보내면, 클라이언트는 이를 브라우저에 저장하고, 매 요청마다 요청 헤더의 Cookie 키에 쿠키를 설정하여 자동으로 서버에 전달합니다.
+
+</details>
+
+<details>
+<summary>Q46. 쿠키의 종류에 대해 설명해 보세요.</summary>
+
+쿠키의 종류로는 세션 쿠키와 영구 쿠키가 있습니다.
+
+세션 쿠키는 Expires 또는 Max-Age 속성이 명시되지 않은 쿠키입니다. 이런 쿠키들은 브라우저 종료 시 삭제됩니다.
+
+영구 쿠키는 Expires 또는 Max-Age 속성이 명시된 쿠키입니다. 이런 쿠키들은 브라우저 종료 시 삭제되지 않고 만료 기한에 도달하면 삭제됩니다.
+
+</details>
+
+<details>
+<summary>Q47. 쿠키와 세션을 사용해 로그인 기능을 구현할 때 고려해야 할 점은 무엇인가요?</summary>
+
+시큐어 코딩을 고려해야 합니다. 시큐어 코딩이란 세션 ID가 사용자의 개인정보를 유추할 수 있는 단서가 아니도록 설정하는 것, HttpOnly, Secure 옵션 설정으로 쿠키를 중간 공격자로부터 보호하는 것, 만료 기한을 설정하여 클라이언트측에서 로그아웃을 하지 않더라도 자동 로그아웃을 보장하는 것입니다.
+
+</details>
+
+## 웹 브라우저의 캐시 #6. 로컬 스토리지, 세션 스토리지, 쿠키의 공통점과 차이점
+
+![note](notes/section2/BrowserCache.jpg)

@@ -1,8 +1,9 @@
 const express = require("express");
 const app = express();
+const path = require("path");
 
 app.get("/", (req, res) => {
-    res.json({ "a": 1 });
+    res.sendFile(path.join(__dirname, "cache.html"));
 });
 
 const server = app.listen(3000);
