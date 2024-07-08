@@ -780,3 +780,196 @@ server.keepAliveTimeout = 30 * 1000;    // ms
 ## 웹 브라우저의 캐시 #6. 로컬 스토리지, 세션 스토리지, 쿠키의 공통점과 차이점
 
 ![note](notes/section2/BrowserCache.jpg)
+
+## 로그인 #1. 세션 기반 인증 방식: 개념
+
+![note](notes/section2/SessionLogin.jpg)
+
+<details>
+<summary>Q48. 세션을 기반으로 수행되는 로그인 과정에 대해 설명하고 그 특징에 대해서도 설명해 보세요.</summary>
+
+사용자가 로그인 요청을 보내면 서버는 이를 검증하고 세션 ID를 발급하여 쿠키에 저장합니다. 그러면 사용자는 매 요청마다 자동적으로 이 세션 ID가 저장된 쿠키를 서버에 보내 인증을 수행하고 로그인을 유지할 수 있습니다.
+
+HTTP는 기본적으로 stateless한 프로토콜이지만 세션을 사용하여 이런 방식으로 로그인 state를 유지할 수 있습니다. 그러나 세션은 서버의 메모리에 저장될 경우 과부하 가능성을 고려해야 하고, RDBMS에 저장될 경우 직렬화/역직렬화 오버헤드를 고려해야 합니다.
+
+</details>
+
+## 로그인 #2. 세션 기반 인증 방식: 실습
+
+**Example) Node.js session-based login: server.js**
+```
+const escapeHtml = require("escape-html");      // 사용자가 보낸 데이터를 escape ex) & -> &amp;
+const express = require("express");
+const session = require("express-session");
+
+const app = express();
+app.use(session({
+    name: "session-id",
+    secret: "THIS IS SESSION SECRET KEY",
+    resave: false,
+    saveUninitialized: false,
+}));
+
+// authorization 미들웨어
+const isAuthenticated = (req, res, next) => {
+    if (req.session.username) next();
+    else next("route");
+};
+
+app.get("/", isAuthenticated, (req, res) => {
+    res.send(escapeHtml(req.session.username) + "님, 환영합니다!");
+});
+
+app.get("/", (req, res) => {
+    res.send(`
+        <p>로그인</p>
+        <form action="/login" method="post">
+        Username: <input name="username"><br>
+        Password: <input name="password" type="password"><br>
+        <input type="submit" text="Login">
+        </form>    
+    `)
+});
+
+// 로그인 요청 시 세션 생성
+app.post("/login", express.urlencoded({ extended: false }), (req, res) => {
+    if (req.body.username === "yushin" && req.body.password === "123") {
+        req.session.regenerate((err) => {
+            if (err) next(err);
+
+            req.session.username = req.body.username;
+            req.session.save((err) => {
+                if (err) return next(err);
+                res.redirect("/");
+            })
+        })
+    } else {
+        res.redirect("/");
+    }
+});
+
+app.listen(3000, () => console.log(`server is running at http://localhost:3000`));
+```
+
+## 로그인 #3. 토큰 기반 인증 방식(access token, refresh token): 개념
+
+![note](notes/section2/TokenLogin.jpg)
+
+<details>
+<summary>Q49. 토큰을 기반으로 수행되는 로그인 과정에 대해 설명하고 그 특징에 대해서도 설명해 보세요.</summary>
+
+사용자가 로그인 요청을 보내면 서버는 이를 검증하고 Access Token, Refresh Token을 생성하여 응답합니다. 사용자는 이를 받아 적절히 저장하고, 매 요청마다 Access Token을 HTTP header의 Authorization 또는 Cookie 키의 값으로 담아 전송합니다. 일반적으로 Access Token은 Refresh Token에 비해 만료 기한이 짧은 편인데, 만료되었을 경우엔 Refresh Token을 사용해 서버에 refresh 요청을 하여 Access Token을 다시 얻어옵니다.
+
+흔히 토큰 기반 인증 방식에서는 JWT 토큰을 사용합니다. JWT 토큰은 header, payload, signature 세 개의 영역으로 구분되며 header에는 토큰 종류와 서명 알고리즘이 base64URI 인코딩되고, payload에는 데이터와 토큰 발급자와 유효 기간 등이 base64URI 인코딩되고, signature에는 header와 payload가 base64URI 인코딩된 값을 합치고 header의 서명 알고리즘과 비밀 키로 서명한 데이터가 담깁니다.
+
+이 방식의 장점으로는 서버에서 인증 상태를 저장할 별도의 저장소가 필요하지 않다는 것, 토큰이 경량화되어 있다는 것, JSON 기반으로 직렬화/역직렬화하기 용이하다는 것이 있습니다. 반면 단점으로는 토큰이 많아짐에 따라 서버에 과부하가 생길 수 있다는 것, 토큰이 탈취될 시 토큰의 데이터가 쉽게 노출된다는 것이 있습니다.
+
+</details>
+
+## 로그인 #4. 토큰 기반 인증 방식(access token, refresh token): 실습
+
+**Example) Node.js token-based login: server.js**
+```
+// in general, token secret must be in .env file
+const ACCESS_TOKEN_SECRET = "ACCESS TOKEN SECRET";
+const REFRESH_TOKEN_SECRET = "REFRESH TOKEN SECRET";
+const PORT = 3000;
+
+const express = require("express");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const cors = require("cors");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+const mockUser = {
+    username: "yushin",
+    password: "123",
+    email: "kys010306@sogang.ac.kr",
+};
+
+// token payload information
+const user = {
+    username: mockUser.username,
+    email: mockUser.email,
+};
+
+// expiresIn option: access token -> short, refresh token -> long
+const accessOption = {
+    expiresIn: "10m",
+};
+
+const refreshOption = {
+    expiresIn: "1d",
+};
+
+const cookieOption = {
+    httpOnly: true,
+    sameSite: "Strict",
+    secure: true,
+    maxAge: 24 * 60 * 60 * 1000,
+};
+
+// authentication middleware
+const isAuthenticated = (req, res, next) => {
+    if (!req.headers.authorization) {
+        return next("route");
+    }
+
+    let token = req.headers.authorization;
+    if (token.startsWith("Bearer ")) {
+        token = token.substring(7, token.length);
+    }
+
+    const auth = jwt.verify(token, ACCESS_TOKEN_SECRET, (err) => {
+        if (err) return next("route");
+    });
+    if (auth) return next();
+    else return next("route");
+};
+
+app.get("/", isAuthenticated, (req, res) => {
+    return res.status(200).send("허용된 요청입니다.");
+});
+
+app.get("/", (req, res) => {
+    return res.status(401).send("허용되지 않은 요청입니다.");
+});
+
+app.post("/login", (req, res) => {
+    const { username, password } = req.body;
+    if (username === mockUser.username && password === mockUser.password) {
+        const accessToken = jwt.sign(mockUser, ACCESS_TOKEN_SECRET, accessOption);
+        const refreshToken = jwt.sign(mockUser, REFRESH_TOKEN_SECRET, refreshOption);
+
+        // cookie에는 refresh 토큰을 담고 이후 요청 시 access 토큰을 갱신한다
+        res.cookie("jwt", refreshToken, cookieOption);
+        return res.json({ accessToken, refreshToken });
+    } else {
+        return res.status(401).json({ message: "인증되지 않은 요청입니다." });
+    }
+});
+
+// access 토큰 요청 전 refresh 토큰 요청을 먼저 한다
+app.post("/refresh", (req, res) => {
+    if (req.cookies.jwt) {
+        const refreshToken = req.cookies.jwt;
+        jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, decoded) => {
+            if (err) {
+                return res.status(401).json({ message: "인증되지 않은 요청입니다." });
+            } else {
+                const accessToken = jwt.sign(mockUser, ACCESS_TOKEN_SECRET, accessOption);
+                return res.json({ accessToken });
+            }
+        });
+    } else {
+        return res.status(401).json({ message: "인증되지 않은 요청입니다." });
+    }
+});
+
+app.listen(PORT, () => console.log("server is running at http://localhost:3000"));
+```
