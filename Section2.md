@@ -1102,3 +1102,20 @@ half duplex 통신을 위해 CSMA/CA 기술을 사용하여 데이터 전송 시
 앞서 말씀드린 것은 사후적인 문제 해결 방안이고, 사전에는 회사 내부적으로 오류 발생 이전 예상치 못한 오류에 대한 대응 지침인 블랙스완 프로토콜을 마련해 두는 방안 역시 생각해볼 수 있습니다.
 
 </details>
+
+## Q. REST API
+
+![note](notes/section2/REST.jpg)
+
+<details>
+<summary>Q58. REST API에 대해 설명해 보세요.</summary>
+
+REST API란 Representational State Transfer 규칙을 지키는 API를 말합니다. 이 규칙은 URI를 통해 자원을 식별하는 것, HTTP Method를 통해 동작을 표현하는 것, HTTP 상태 코드를 적재적소에 활용하는 것이 주요한 특징입니다.
+
+URI를 설계할 때는 소문자만 사용하며 내용이 길면 bar(-)로 연결해야 합니다. slash(/)로 구분된 각각의 청크마다 복수형의 명사 또는 ID 정도의 정보를 사용하고 동사에 해당하는 것은 HTTP method로 나타내야 합니다. 또한, 계층적으로 URI를 구성해야 합니다.
+
+</details>
+
+## Q. 브라우저 렌더링 과정
+
+![note](notes/section2/BrowserRendering.jpg)
