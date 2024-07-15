@@ -1119,3 +1119,84 @@ URI를 설계할 때는 소문자만 사용하며 내용이 길면 bar(-)로 연
 ## Q. 브라우저 렌더링 과정
 
 ![note](notes/section2/BrowserRendering.jpg)
+
+## Q. www.naver.com에 접속할 때 일어나는 일
+
+![note](notes/section2/wwwnavercom.jpg)
+
+## Q. 이더넷 프레임
+
+![note](notes/section2/EthernetFrame.jpg)
+
+## Q. CORS
+
+![note](notes/section2/CORS.jpg)
+
+<details>
+<summary>Q60. CORS란 무엇입니까?</summary>
+
+CORS란 Cross Origin Resource Sharing의 줄임말로, 서로 다른 오리진 간 자원 공유에 관한 권한을 제어하는 것입니다. 이는 HTTP 헤더를 통해 이루어지며, 서버측에서 응답 헤더에 Access-Control-Allow-Origin/Methods/Headers 등의 키로 허용할 오리진/메서드/헤더를 지정할 수 있습니다. 클라이언트는 preflight request 시 OPTIONS 메서드로 서버에서 통신 방식을 가져오고 자신의 요청이 허용 가능한지 판단합니다.
+
+</details>
+
+## Q. 네이글 알고리즘
+
+![note](notes/section2/NagleAlgorithm.jpg)
+
+## Q. HTTP 멱등성
+
+![note](notes/section2/HTTPIdempotency.jpg)
+
+**Example) POST idempotency server.js**
+```
+const express = require("express");
+const PORT = process.env.PORT || 3000;
+const app = express();
+const idempotencyKeyStore = new Map();
+
+app.use(express.json());
+
+app.post("/order", (req, res) => {
+    const idempotencyKey = req.headers["idempotency-key"];
+    if (!idempotencyKey) {
+        return res.status(400).json({ message: "An idempotency key has not been passed." });
+    }
+
+    if (idempotencyKeyStore[idempotencyKey]) {
+        return res.status(200).json({
+            message: "The same request has already been processed.",
+            result: idempotencyKeyStore[idempotencyKey],
+        });
+    }
+
+    const { items, total } = req.body;
+    const order = {
+        id: Math.floor(Math.random() * 1e6),
+        items,
+        total,
+    };
+    idempotencyKeyStore[idempotencyKey] = order;
+    return res.status(201).json(order);
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+```
+
+**Example) POST idempotency request**
+```
+$ curl -X POST http://localhost:3000/order -H "Content-Type: application/json" -H "Idempotency-Key: 6fa5438a-6818-48d9-bb15-6954a1f3e3a3" -d '{"items": ["apple", "banana"], "total": 15}'
+$ {"id":916235,"items":["apple","banana"],"total":15}
+```
+
+<details>
+<summary>Q61. HTTP 멱등성에 대해 설명해 보세요.</summary>
+
+HTTP의 멱등성이란 같은 요청을 반복하였을 때 서버의 상태가 일정하게 유지되는 것을 보장하는 속성입니다. HTTP 메서드는 멱등성이 보장되는 것, 보장되지 않는 것으로 나뉘고 멱등성이 보장되는 것은 또 다시 안전한 메서드, 안전하지 않은 메서드로 나뉩니다.
+
+멱등성이 보장되는 메서드는 GET, HEAD, OPTIONS, PUT, DELETE가 있으며, 이 중 안전한 메서드는 GET, HEAD, OPTIONS이고 안전하지 않은 메서드는 PUT, DELETE입니다.
+
+멱등성이 보장되지 않는 메서드는 POST, PATCH입니다. 특히 PATCH는 상황에 따라 멱등성이 보장될 수도 있으나 증감 연산과 같은 수정 연산을 사용하는 경우엔 멱등성이 보장되지 않습니다.
+
+</details>
