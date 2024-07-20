@@ -294,3 +294,80 @@ IPC, Inter-Process Communiation은 프로세스들 간에 통신하기 위한 �
 교착 상태를 해결하기 위해선 위 4가지 조건 중 하나를 제거하거나, 은행원 알고리즘을 사용해 안정 상태일 때만 요청한 자원을 할당하거나, 교착 상태 발생 시 사이클을 판단하고 관련된 프로세스들을 종료하거나, 교착 상태 발생 시 사용자가 직접 시스템을 종료하는 방법이 사용될 수 있습니다.
 
 </details>
+
+## CPU 스케줄링 알고리즘
+
+![note](notes/section3/CPUSchedulingAlgorithm.jpg)
+
+<details>
+<summary>Q21. CPU 스케줄링 알고리즘에 대해 설명해 보세요.</summary>
+
+CPU 스케줄링 알고리즘은 CPU 스케줄러가 디스패치할 다음 프로세스를 결정하기 위한 알고리즘입니다. 종류는 비선점형, 선점형으로 나뉘고 현대 OS는 선점형 알고리즘을 사용합니다.
+
+비선점형 스케줄링 알고리즘에는 도달한 순서대로 처리하는 FCFS, 남은 실행 시간이 짧은 순서대로 처리하는 SJF, 높은 우선순위인 것을 먼저 처리하는 우선순위 알고리즘이 있습니다. SJF는 긴 작업이 starvation을 겪을 수 있지만 우선순위 알고리즘은 aging 기법을 도입하여 starvation을 방지합니다.
+
+선점형 스케줄링 알고리즘에는 지정된 time quantum만큼 수행하고 선점되는 Round Robin, 남은 실행 시간이 가장 짧은 순서대로 처리하고 새로이 도달한 작업의 남은 실행 시간이 더 짧을 경우 선점하는 SRTF 알고리즘이 있습니다.
+
+두 알고리즘을 합친 Multi-level queue 알고리즘도 존재하는데, 이것은 ready queue를 여러 개로 분할하고 각각의 ready queue마다 상이한 스케줄링 알고리즘을 적용한 것입니다.
+
+</details>
+
+## 캐시
+
+**Example) Node.js node-cache**
+```
+const express = require("express");
+const NodeCache = require("node-cache");
+
+const app = express();
+const cache = new NodeCache();
+const obj = {
+    "userId": 1,
+    "id": 1,
+    "title": "hello world!",
+    "completion": false,
+};
+
+app.get("/data", (req, res) => {
+    const value = cache.get("data");
+
+    if (value) {
+        console.log("Request has been cached. Respond the cached data.");
+        return res.json(value);
+    } else {
+        console.log("Request has not been cached. Update the cache and respond.");
+        setTimeout(() => {
+            cache.set("data", obj);
+            return res.json(obj);
+        }, 2000);
+    }
+});
+
+app.listen(3000, () => {
+    console.log("Cache server is running on http://locahost:3000");
+})
+```
+
+![note](notes/section3/Cache.jpg)
+
+<details>
+<summary>Q22. 캐시의 참조의 지역성에 대해 설명하고 이것이 왜 중요한지 설명해 보세요.</summary>
+
+참조의 지역성이란 시간적, 공간적으로 근접한 것이 다시 참조될 가능성이 높은 특성입니다. 시간적 지역성은 최근 참조된 데이터가 다시 참조될 가능성이 높다는 것이고, 공간적 지역성은 최근 참조된 위치 근처가 다시 참조될 가능성이 높다는 것입니다.
+
+참조의 지역성이 중요한 이유는 캐시로 사용되는 메모리가 그 하위 계층의 메모리에 비해 비싸고 용량이 적기 때문에 저장될 데이터를 효율적이게 선택하기 위함입니다.
+
+</details>
+
+<details>
+<summary>Q23. 캐시 매핑의 방식들에 대해 설명해 보세요.</summary>
+
+캐시 매핑에는 직접 매핑, 연관 매핑, 집합-연관 매핑 세 가지 방식이 있습니다.
+
+직접 매핑은 특정 메모리 공간을 순차적으로 특정 캐시 공간에 대응하는 것입니다. 페이지 번호를 tag, bd로 구분하고 같은 bd를 가지는 공간에 캐싱합니다. 이 방식은 빠른 처리 속도가 장점이지만 스와핑이 많이 발생할 수 있는 것이 단점입니다.
+
+연관 매핑은 순서와 상관 없이 캐시의 모든 공간에 메모리의 데이터를 캐싱할 수 있는 것입니다. tag, bd를 합쳐 P를 만들고 이를 기준으로 데이터를 저장합니다. 이 방식은 스와핑이 적게 발생한다는 것이 장점이지만 접근 속도가 느리다는 것이 단점입니다.
+
+집합-연관 매핑은 직접 매핑과 연관 매핑을 합한 것으로, bd에 따라 여러 개의 집합으로 캐시 공간을 나누고 이 공간에는 데이터를 연관 매핑 법칙에 따라 저장하는 것입니다. 이렇게 함으로써 직접 매핑의 장점인 처리 속도, 연관 매핑의 장점인 스와핑 횟수 절약을 둘 다 달성할 수 있습니다.
+
+</details>
