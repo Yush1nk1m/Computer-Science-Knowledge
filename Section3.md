@@ -371,3 +371,29 @@ app.listen(3000, () => {
 집합-연관 매핑은 직접 매핑과 연관 매핑을 합한 것으로, bd에 따라 여러 개의 집합으로 캐시 공간을 나누고 이 공간에는 데이터를 연관 매핑 법칙에 따라 저장하는 것입니다. 이렇게 함으로써 직접 매핑의 장점인 처리 속도, 연관 매핑의 장점인 스와핑 횟수 절약을 둘 다 달성할 수 있습니다.
 
 </details>
+
+## 메모리 할당
+
+![note](notes/section3/MemoryAllocation.jpg)
+
+<details>
+<summary>Q24. 운영체제의 메모리 할당 방식에 대해 설명해 보세요.</summary>
+
+운영체제는 메모리 할당 시 연속된 공간을 할당하는 Contiguous allocation, 분산된 공간을 할당하는 Non-contiguous allocation 방식을 사용합니다.
+
+Contiguous allocation은 다시 고정된 크기의 블록을 할당하는 fixed partitioning, 가변 크기의 블록을 할당하는 variable partitioning으로 나뉩니다. fixed partitioning은 내부 단편화의 문제가 있고, variable partitioning은 외부 단편화의 문제가 있습니다.
+
+Non-contiguous allocation은 현대 운영체제가 사용하는 메모리 할당 방식으로 paging, segmentation, paged segmentation이 있습니다. paging은 고정된 크기의 페이지로 메모리 공간을 분할하고 이를 분산적으로 할당합니다. 그렇기 때문에 내부 단편화 문제가 있는 대신 외부 단편화 문제는 없습니다. segmentation은 프로그램을 segment라는 의미 단위로 묶어 코드, 데이터, 힙, 스택, 함수 등의 단위로 그 크기에 맞추어 가변적으로 메모리를 할당합니다. 그렇기 때문에 내부 단편화 문제가 없는 대신 외부 단편화 문제가 있습니다. 두 방식을 합친 paged segmentation 방식은 segment를 고정 크기로 분할하여 할당합니다.
+
+</details>
+
+<details>
+<summary>Q25. 내부 단편화와 외부 단편화의 차이점이 무엇인가요?</summary>
+
+내부 단편화는 할당된 공간들 중 사용하지 않는 공간 때문에 메모리 낭비가 일어나는 것이고, 외부 단편화는 할당되지 않은 공간의 총 용량은 충분하지만 공간이 연속되지 않거나 부분적인 공간의 크기가 충분하지 않은 등의 이유로 할당할 수 없어 메모리 낭비가 일어나는 것입니다.
+
+</details>
+
+## Questions
+
+![note](notes/section3/Questions.jpg)
