@@ -1,0 +1,3 @@
+CREATE TABLE t4(
+    c1  VARCHAR(16383)  NOT NULL
+);
