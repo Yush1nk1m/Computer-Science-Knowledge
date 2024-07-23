@@ -85,3 +85,90 @@ TEXT 타입은 데이터 자체는 디스크에 저장하고, 데이터에 대�
 열거형 타입에는 대표적으로 ENUM, SET이 존재합니다. ENUM 타입은 단일 선택만 가능하고, 최대 65535개의 요소를 저장할 수 있습니다. SET 타입은 다중 선택이 가능하고 비트 단위 연산도 수행할 수 있으며, 최대 64개의 요소를 저장할 수 있습니다.
 
 </details>
+
+## 데이터베이스의 기본 #3. 관계와 키
+
+![note](notes/section4/DB3.jpg)
+
+<details>
+<summary>Q9. 데이터베이스의 테이블 간 관계에 대해 설명해 보세요.</summary>
+
+데이터베이스에서 테이블 간에는 일대일 관계, 일대다 관계, 다대다 관계를 맺을 수 있습니다. 이러한 관계는 2개의 테이블 간에 어떤 테이블의 1개 요소가 다른 테이블의 몇 개의 요소와 관계되는지로 판단합니다.
+
+예를 들어, 학생 한 명은 하나의 연락처를 가질 수 있고, 연락처 하나는 학생 한 명에 대응될 수 있다고 가정합시다. 이런 관계는 일대일 관계입니다. 학생 한 명은 하나의 지도교수를 배정받을 수 있고, 지도교수 한 명은 학생 여러 명을 배정받을 수 있다고 합시다. 이런 관계는 일대다 관계입니다. 학생 한 명은 여러 개의 강의를 담을 수 있고, 강의 하나는 여러 명의 학생이 수강한다고 합시다. 이런 관계는 다대다 관계입니다.
+
+</details>
+
+<details>
+<summary>Q10. 데이터베이스에서 테이블의 키에 대해 설명해 보세요.</summary>
+
+키는 테이블의 필드의 조합입니다. 키의 종류로는 슈퍼 키, 후보 키, 기본 키, 대체 키, 외래 키, 복합 키가 있습니다.
+
+슈퍼 키는 데이터베이스 테이블의 각 행을 고유하게 구분할 수 있는 유일성을 가진 키를 칭합니다. 후보 키는 슈퍼 키들 중 최소성을 만족한 키를 칭합니다. 기본 키는 후보 키들 중 실제 데이터베이스의 테이블을 식별하기 위해 선택된 키를 칭하고, 대체 키는 선택되지 않은 키를 칭합니다. 외래 키는 다른 테이블의 기본 키를 참조하고 있는 키입니다. 복합 키는 2개 이상의 필드가 조합된 키입니다.
+
+</details>
+
+## 데이터베이스의 기본 #4. CRUD 실습
+
+**Example) MySQLPractice.sql**
+```
+use cspractice;
+
+-- 테이블 생성
+CREATE TABLE employees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    position ENUM("Software engineer", "Product manager", "Designer"),
+    skills SET("Java", "Python", "SQL", "Design", "Management"),
+    salary DECIMAL(10, 2)
+);
+
+-- 데이터 삽입: Create
+INSERT INTO employees (name, position, skills, salary) VALUES
+("John Doe", "Software engineer", "Java,Python", 60000.00),
+("Jane Smith", "Product manager", "SQL,Management", 75000.00),
+("Emily Davis", "Designer", "Design", 70000.00);
+
+-- 데이터 조회: Read
+SELECT * FROM employees;
+
+-- 데이터 조건 조회: Read
+SELECT * FROM employees WHERE position = "Software engineer";
+SELECT * FROM employees WHERE FIND_IN_SET("Java", skills);
+
+-- 데이터 업데이트: Update
+UPDATE employees SET salary = 80000.00 WHERE name = "John Doe";
+
+-- 데이터 삭제: Delete
+DELETE FROM employees WHERE name = "Emily Davis";
+
+-- 테이블 삭제: Delete
+DROP TABLE employees;
+```
+
+## 데이터베이스의 기본 #5. ERD(Entity Relation Diagram)
+
+<details>
+<summary>Q11. ERD가 무엇인지 설명해 보세요.</summary>
+
+ERD, Entity Relation Diagram이란 비즈니스 요구사항에 맞추어 데이터베이스의 테이블들과 그들 간의 관계를 시각화한 것입니다. 관계형 데이터베이스의 설계에 사용됩니다.
+
+</details>
+
+## 데이터베이스의 기본 #6 ~ #7. 조인
+
+![note](notes/section4/DB6_7.jpg)
+
+<details>
+<summary>Q12. 내부 조인과 외부 조인의 차이점은 무엇인가요?</summary>
+
+내부 조인은 두 테이블에서 조건을 만족하는 교집합을 반환합니다. 반면 외부 조인은 교집합이 아닌 데이터가 포함될 수 있습니다. 왼쪽 외부 조인은 첫 번째 테이블의 모든 데이터를 포함하며 이 중 두 번째 테이블에 존재하지 않는 값은 NULL로 치환됩니다. 오른쪽 외부 조인은 반대로 두 번째 테이블의 모든 데이터를 포함하며 이 중 첫 번째 테이블에 존재하지 않는 값은 NULL로 치환됩니다. 마지막으로 완전 외부 조인은 모든 데이터를 포함하며 양 테이블 간 존재하지 않는 데이터는 NULL로 치환됩니다.
+
+</details>
+
+<details>
+<summary>Q13. 교차 조인과 자연 조인의 차이점은 무엇인가요?</summary>
+
+교차 조인은 카티션 곱을 적용하여 두 테이블의 데이터 간 모든 조합을 생성합니다. 자연 조인은 두 테이블에서 필드의 이름이 일치하는 것들을 조건절에 모아 해당 필드에 대해 내부 조인을 수행합니다.
+
+</details>
