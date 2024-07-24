@@ -172,3 +172,48 @@ ERD, Entity Relation Diagram이란 비즈니스 요구사항에 맞추어 데이
 교차 조인은 카티션 곱을 적용하여 두 테이블의 데이터 간 모든 조합을 생성합니다. 자연 조인은 두 테이블에서 필드의 이름이 일치하는 것들을 조건절에 모아 해당 필드에 대해 내부 조인을 수행합니다.
 
 </details>
+
+## 조인 알고리즘
+
+![note](notes/section4/JoinAlgorithm.jpg)
+
+<details>
+<summary>Q14. 조인 알고리즘에 대해 설명해 보세요.</summary>
+
+조인 알고리즘이란 데이터베이스 내부에서 조인 연산을 수행할 때 테이블의 데이터들을 결합하는 데 사용되는 알고리즘입니다. 명시적인 지정은 불가능하고, Query optimizer에 의해 결정됩니다. 종류로는 중첩 루프 조인, 정렬 병합 조인, 해시 조인이 있습니다.
+
+중첩 루프 조인은 두 테이블에 대해 이중 for loop를 사용해 한 테이블의 각 요소에 대해 다른 테이블을 모두 순회하며 데이터를 찾는 방식입니다. 시간 복잡도는 O(MN)입니다.
+
+정렬 병합 조인은 두 테이블의 데이터를 조인할 필드를 기준으로 정렬한 후 투 포인터를 사용해 순회해 나가는 방식입니다. 시간 복잡도는 O(MlogM + NlogN)입니다.
+
+해시 조인은 두 테이블 중 작은 테이블의 데이터를 해싱하는 Build 단계, 큰 테이블을 순회하며 해시 값을 기반으로 데이터를 찾아 나가는 Probe 단계로 나뉩니다. 시간 복잡도는 O(M + N)입니다.
+
+</details>
+
+## 트랜잭션
+
+![note](notes/section4/Transaction.jpg)
+
+<details>
+<summary>Q15. 트랜잭션이란 무엇이고, 트랜잭션의 ACID 원칙이란 무엇인지 설명해 보세요.</summary>
+
+트랜잭션이란 데이터베이스의 논리적인 작업 수행 단위를 의미합니다. 논리적인 기능을 수행하기 위한 쿼리의 집합이며 모든 쿼리의 성공을 나타내는 커밋 연산, 모든 쿼리의 반영 취소를 나타내는 롤백 연산이 있습니다.
+
+트랜잭션은 ACID 원칙을 준수해야 합니다. 이는 각각 모두 반영되거나 아니면 모두 반영되지 않아야 한다는 Atomicity, 데이터가 규칙에 어긋나지 않고 조작되어야 한다는 Consistency, 트랜잭션 간에는 간섭하지 않고 격리되어야 한다는 Isolation, 성공한 트랜잭션은 영구적으로 반영되어야 한다는 Durability를 의미합니다.
+
+</details>
+
+<details>
+<summary>Q16. 트랜잭션 격리 수준에 대해 설명해 보세요.</summary>
+
+트랜잭션 격리 수준에는 격리성이 낮은 것부터 순서대로 READ_UNCOMMITED, READ_COMMITED, REPEATABLE_READ, SERIALIZABLE이 있습니다. 격리성이 낮으면 다양한 문제가 나타날 수 있는데, 커밋되지 않는 데이터를 읽는 Dirty read, 같은 행에 대해 2번의 조회 연산이 다른 결과를 반환하는 Non-repeatable read, 한 트랜잭션 내에서 수행되는 같은 쿼리 2회가 다른 결과를 반환하는 Phantom read가 대표적입니다.
+
+READ_UNCOMMITED는 커밋되지 않은 데이터도 읽을 수 있는 것으로, Dirty read, Non-repeatable read, Phantom read 세 개의 문제점을 모두 가집니다.
+
+READ_COMMITED는 커밋된 데이터만 읽을 수 있는 것으로, Non-repeatbale read, Phantom read 두 개의 문제점을 가집니다.
+
+REPEATABLE_READ는 트랜잭션이 수행되기 전 시작된 트랜잭션이 커밋한 데이터만 읽을 수 있는 것으로, Phantom read 문제점만 가집니다.
+
+SERIALIZABLE은 모든 트랜잭션을 순차적으로 수행하는 것으로 완전한 격리성을 보장합니다. 때문에 성능이 안 좋은 대신 Dirty read, Non-repeatable read, Phantom read 중 어떤 문제점도 갖지 않습니다.
+
+</details>
